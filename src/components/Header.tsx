@@ -17,13 +17,20 @@ import {
   Store,
   Table,
   X,
+  LogIn,
+  LogOut,
+  UserPlus,
+  LayoutDashboard,
+  User,
 } from 'lucide-react'
+import { useAuth } from '../lib/auth.context'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [groupedExpanded, setGroupedExpanded] = useState<
     Record<string, boolean>
   >({})
+  const auth = useAuth()
 
   return (
     <>
@@ -268,9 +275,81 @@ export default function Header() {
           </Link>
 
           {/* Demo Links End */}
+
+          {/* Auth Links */}
+          <div className="mt-4 pt-4 border-t border-gray-700">
+            <h3 className="text-xs uppercase text-gray-400 font-semibold mb-2 px-3">
+              Authentication
+            </h3>
+
+            {auth.isAuthenticated ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+                  activeProps={{
+                    className:
+                      'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+                  }}
+                >
+                  <LayoutDashboard size={20} />
+                  <span className="font-medium">Dashboard</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    auth.logout()
+                    setIsOpen(false)
+                  }}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+                >
+                  <LogOut size={20} />
+                  <span className="font-medium">Logout</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+                  activeProps={{
+                    className:
+                      'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+                  }}
+                >
+                  <LogIn size={20} />
+                  <span className="font-medium">Login</span>
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+                  activeProps={{
+                    className:
+                      'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+                  }}
+                >
+                  <UserPlus size={20} />
+                  <span className="font-medium">Register</span>
+                </Link>
+              </>
+            )}
+          </div>
         </nav>
 
         <div className="p-4 border-t border-gray-700 bg-gray-800 flex flex-col gap-2">
+          {auth.isAuthenticated && (
+            <div className="mb-2 p-3 bg-gray-700 rounded-lg">
+              <div className="flex items-center gap-2 text-sm">
+                <User size={16} />
+                <div>
+                  <p className="font-medium text-white">{auth.user?.name}</p>
+                  <p className="text-xs text-gray-400">{auth.user?.email}</p>
+                </div>
+              </div>
+            </div>
+          )}
           <TanChatAIAssistant />
         </div>
       </aside>
